@@ -9,19 +9,13 @@ def main():
     halo.print_total_server_count()
     servers_running_docker = halo.get_servers_running_docker()
     print("Servers running dockerd: %s" % str(len(servers_running_docker)))
-    unprotected = [x for x in halo.servers
-                   if x["id"] in servers_running_docker and
-                   x["docker_inspection"] != "Enabled"]
-    protected = [x for x in halo.servers
-                 if x["id"] in servers_running_docker and
-                 x["docker_inspection"] == "Enabled"]
-    print("Protected servers (%s)" % str(len(protected)))
-    print("Unprotected servers (%s):" % str(len(unprotected)))
-    for x in unprotected:
+    print("Protected servers (%s)" % str(len(halo.protected)))
+    print("Unprotected servers (%s):" % str(len(halo.unprotected)))
+    for x in halo.unprotected:
         print("Server ID: %s\tServer name: %s\tServer group: %s\t" %
               (x["id"], x["hostname"], x["group_path"]))
     if args.fix:
-        ids = [x["id"] for x in unprotected]
+        ids = [x["id"] for x in halo.unprotected]
         halo.enable_docker_inspection(ids)
     return
 

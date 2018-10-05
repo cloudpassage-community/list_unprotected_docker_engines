@@ -1,5 +1,4 @@
 import cloudpassage
-import requests
 import pprint
 
 
@@ -13,13 +12,25 @@ class Halo(object):
         session (cloudpassage.HaloSession): This contains session information
             used for interacting with the ClouddPassage API.
         servers (list): This contains a list of all servers in the account.
+        servers_running_docker (list): Servers running Docker daemon (list
+        of server IDs).
+        unprotected (list): Servers running Docker engine and without
+            Docker inspection enabled.
+        protected (list): Servers running Docker engine and with Docker
+            inspection enabled.
     """
     def __init__(self):
         self.key_manager = cloudpassage.ApiKeyManager()
         self.session = cloudpassage.HaloSession(self.key_manager.key_id,
                                                 self.key_manager.secret_key)
-        self.servers = []
-        self.refresh_servers()
+        self.servers = self.get_servers()
+        self.servers_running_docker = self.get_servers_running_docker()
+        self.unprotected = [x for x in self.servers
+                            if x["id"] in self.servers_running_docker and
+                            x["docker_inspection"] != "Enabled"]
+        self.protected = [x for x in self.servers
+                          if x["id"] in self.servers_running_docker and
+                          x["docker_inspection"] == "Enabled"]
 
     def enable_docker_inspection(self, ids):
         """Enable Docker inspection for list of Halo server IDs."""
@@ -38,28 +49,7 @@ class Halo(object):
     def print_total_server_count(self):
         print("Total servers: %s" % len(self.servers))
 
-    def refresh_servers(self):
-        """Refresh self.servers with a current list of servers in Halo."""
+    def get_servers(self):
+        """Return a current list of servers in Halo."""
         server_obj = cloudpassage.Server(self.session)
-        self.servers = server_obj.list_all()
-
-    def server_is_running_docker(self, bundle, retry=False):
-        """Return server ID if server is running Docker, else None.
-
-        Args:
-            bundle (list): Position 0 is occupied by a cloudpassage.HaloSession
-                object. Position 1 is occupied by a string containing serverID.
-        """
-        server_obj = cloudpassage.Server(bundle[0])
-        try:
-            if [x for x in server_obj.list_processes(bundle[1])
-                    if x["process_name"] == "dockerd"]:
-                return bundle[1]
-            else:
-                return None
-        except requests.exceptions.ConnectionError as e:
-            print(e)
-            if retry:
-                print("Already retried this server, moving on.")
-                return None
-        self.server_is_running_docker(bundle, retry=True)
+        return server_obj.list_all()
