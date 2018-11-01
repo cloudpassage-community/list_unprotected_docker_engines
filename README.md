@@ -23,10 +23,10 @@ Install the CloudPassage SDK with `python2.7 -m pip install cloudpassage`
 
 Set these environment variables:
 
-| Variable            | Purpose                                  |
-|---------------------|------------------------------------------|
-| HALO_API_KEY        | Read-only Halo API key                   |
-| HALO_API_SECRET_KEY | API secret corresponding to HALO_API_KEY |
+| Variable            | Purpose                                                 |
+|---------------------|---------------------------------------------------------|
+| HALO_API_KEY        | Auditor Halo API key (Administrator if using ``--fix`)  |
+| HALO_API_SECRET_KEY | API secret corresponding to HALO_API_KEY                |
 
 Run:
 
