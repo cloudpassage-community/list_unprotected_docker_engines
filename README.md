@@ -25,7 +25,7 @@ Set these environment variables:
 
 | Variable            | Purpose                                                 |
 |---------------------|---------------------------------------------------------|
-| HALO_API_KEY        | Auditor Halo API key (Administrator if using ``--fix`)  |
+| HALO_API_KEY        | Auditor Halo API key (Administrator if using `--fix`)   |
 | HALO_API_SECRET_KEY | API secret corresponding to HALO_API_KEY                |
 
 Run:
